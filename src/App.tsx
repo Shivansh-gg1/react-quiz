@@ -6,7 +6,7 @@ import QuestionCard from './components/QuestionCard';
 
 import { QuestionState, difficulty } from './API';
 
-type answerObject = {
+export type answerObject = {
   question: string;
   answer: string;
   correct: boolean;
@@ -46,11 +46,32 @@ const App = () => {
     if (!gameOver) {
       //users answer
       const answer = e.currentTarget.value;
+      //check answer against correct answer
+      const correct = questions[number].correct_answer === answer;
+
+      if (correct) SetScore(prev => prev + 1);
+      // save answer in the array
+      const answerObject = {
+        question: questions[number].question,
+        answer,
+        correct,
+        correctAnswer: questions[number].correct_answer,
+      };
+      setUserAnswers((prev) => [...prev, answerObject])
     }
 
   }
 
-  const nextQuestion = () => {}
+  const nextQuestion = () => {
+    //move on to next ques
+    const nextQuestion = number + 1;
+
+    if (nextQuestion === TOTAL_QUESTIONS) {
+      setGameOver(true);
+    } else {
+      setNumber(nextQuestion);
+    }
+  };
   return (
     <div className="App">
       <h1>REACT QUIZ</h1>
@@ -60,7 +81,7 @@ const App = () => {
         </button>
       ) : null}
 
-      {!gameOver ? <p className="score">Score:</p> : null}
+      {!gameOver ? <p className="score">Score: {score}</p> : null}
       {loading && <p>Loading Question...</p>}
       {!loading && !gameOver && (
       <QuestionCard
